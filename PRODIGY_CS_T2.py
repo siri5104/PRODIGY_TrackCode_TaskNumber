@@ -1,41 +1,47 @@
-
-
 from PIL import Image
-def encrypt_image(image_path):
-    
-    img = Image.open(image_path)
-    pixels = img.load()
-    width, height = img.size
-    for i in range(width):
-        for j in range(height):
-            r, g, b = pixels[i, j]
-            # Example: swap red and blue channels
-            pixels[i, j] = (b, g, r)
-  
-    encrypted_image_path = 'encrypted_image.png'
-    img.save(encrypted_image_path)
+import numpy as np
+
+def encrypt_image(image_path, key):
+    # Open the image
+    image = Image.open(image_path)
+    image = image.convert("RGB")
+    data = np.array(image)
+
+    # Encrypt the image by applying a basic mathematical operation
+    encrypted_data = (data + key) % 256
+
+    # Create and save the encrypted image
+    encrypted_image_path = "encrypted_image.png"
+    encrypted_image = Image.fromarray(encrypted_data.astype(np.uint8))
+    encrypted_image.save(encrypted_image_path)
     print(f"Image encrypted and saved as {encrypted_image_path}")
-    return encrypted_image_path
-def decrypt_image(encrypted_image_path):
+    encrypted_image.show()
 
-    encrypted_img = Image.open(encrypted_image_path)
-    pixels = encrypted_img.load()
-    width, height = encrypted_img.size
+def decrypt_image(encrypted_image_path, key):
+    # Open the encrypted image
+    encrypted_image = Image.open(encrypted_image_path)
+    encrypted_image = encrypted_image.convert("RGB")
+    encrypted_data = np.array(encrypted_image)
 
-    for i in range(width):
-        for j in range(height):
-            r, g, b = pixels[i, j]
-            # Example: swap red and blue channels back to original
-            pixels[i, j] = (b, g, r)
+    # Decrypt the image by reversing the encryption operation
+    decrypted_data = (encrypted_data - key) % 256
 
-    decrypted_image_path = 'decrypted_image.png'
-    encrypted_img.save(decrypted_image_path)
+    # Create and save the decrypted image
+    decrypted_image_path = "decrypted_image.png"
+    decrypted_image = Image.fromarray(decrypted_data.astype(np.uint8))
+    decrypted_image.save(decrypted_image_path)
     print(f"Image decrypted and saved as {decrypted_image_path}")
-    return decrypted_image_path
 
-original_image_path =r'D:\New folder\Data-Encryption-Descryption-1024x631.jpg'
+    # Display the decrypted image
+    decrypted_image.show()
 
-encrypted_image_path = encrypt_image(original_image_path)
-decrypted_image_path = decrypt_image(encrypted_image_path)
-
-
+inputs=input("1)encryption-e 2)decryption-d")
+# Get image path and key from the user
+image_path = input("Enter the path of the image to be encrypted: ")
+key = 50
+if inputs=="e":
+    # Encrypt the image
+    encrypt_image(image_path, key)
+else:
+    # Decrypt the image
+    decrypt_image(image_path, key)
